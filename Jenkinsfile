@@ -24,7 +24,7 @@ pipeline {
 			echo '----------Sending Build Notification to CDD--------------'
 		}
 		success { 
-			sendNotificationToCDD appName: 'MobBank-Server', 
+			sendNotificationToCDD appName: 'Mobile-server', 
 					appVersion:  "${env.BRANCH_NAME}", 
 					gitCommit: "${env.GIT_COMMIT}",
 					gitPrevSuccessfulCommit: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}",
