@@ -1,4 +1,5 @@
 pipeline {
+    
     agent {
         label "master"
 	}
@@ -20,16 +21,23 @@ pipeline {
 		}
 	}		
     post { 
+	    	
 		always { 
-			echo '----------Sending Build Notification to CDD--------------'
+
+			//echo '----------Sending Build Notification to CDD--------------'
+			echo "${determineRepoName()}"
+			
 		}
 		success { 
-			sendNotificationToCDD appName: 'Mobile-server', 
+
+			withCredentials([string(credentialsId: 'CDD-Project-Mobile', variable: 'CDD_APIKEY')]){
+	                	
+				sendNotificationToCDD appName: "${determineRepoName()}" , 
 					appVersion:  "${env.BRANCH_NAME}", 
 					gitCommit: "${env.GIT_COMMIT}",
 					gitPrevSuccessfulCommit: "${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}",
 					overrideCDDConfig: [
-							customApiKey: 'eyJhbGciOiJIUzUxMiJ9.eyJ1c2VybmFtZSI6InN1cGVydXNlckBjYS5jb20iLCJ0ZW5hbnRJZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsInVzZXJJZCI6MSwianRpIjoiMGE4MjllNTUtYjFiMy00ZWQ4LTgwYTYtNTFjNmUzYzQ3OTNmIiwiZXhwIjoxNTg5NjQ4Mjg4fQ.mrTaJD-gPLODJ518AFyWK1Iixy3krWuvNOMD2WwVIJlxKE-wgNo56Z5rtnZQjFAPTf6HBde5mPCnZxNXS3ohhg',
+						customApiKey: "${CDD_APIKEY}",
 							customProxyPassword: '',
                             				customProxyUrl: '',
                            				customProxyUsername: '',
@@ -39,6 +47,11 @@ pipeline {
                             				customUseSSL: false
                     			],
 					releaseTokens: '{}'
+			}	
 		}
 	}
 }
+String determineRepoName() {
+    return scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+}
+
