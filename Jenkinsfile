@@ -21,7 +21,6 @@ pipeline {
 		     }
 		   stage ("Send Notification to CDD"){
             steps {
-			         echo '----------Sending Build Notification to CDD--------------'
                echo "${determineRepoName()}"
                }
             steps{
